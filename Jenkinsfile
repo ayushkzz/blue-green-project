@@ -18,14 +18,14 @@ pipeline {
         stage('Build with Maven') {
             steps {
                 echo 'Building application with Maven...'
-                sh 'cd ${APP_DIR}/app && mvn clean package -DskipTests=false'
+                sh 'mvn clean package -DskipTests=false -f ${APP_DIR}/app/pom.xml'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'mvn clean package -DskipTests=false -f ${APP_DIR}/app/pom.xml'
+                sh 'docker build -t ${IMAGE_NAME} -f ${APP_DIR}/docker/Dockerfile ${APP_DIR}'
             }
         }
 
@@ -35,7 +35,7 @@ pipeline {
                 sh '''
                     docker stop green-container || true
                     docker rm green-container || true
-                    docker run -d --name green-container -p 8082:8080 ${IMAGE_NAME}
+                    docker run -d --name green-container -p 8082:8080 blue-green-app
                 '''
             }
         }
@@ -53,7 +53,7 @@ pipeline {
         stage('Switch Traffic to Green') {
             steps {
                 echo 'Switching Nginx traffic to Green...'
-                sh '${APP_DIR}/scripts/switch-to-green.sh'
+                sh 'bash ${APP_DIR}/scripts/switch-to-green.sh'
             }
         }
 
@@ -65,7 +65,7 @@ pipeline {
         }
         failure {
             echo '❌ Deployment failed! Rolling back to Blue...'
-            sh '${APP_DIR}/scripts/rollback-to-blue.sh'
+            sh 'bash ${APP_DIR}/scripts/rollback-to-blue.sh'
         }
     }
 }
