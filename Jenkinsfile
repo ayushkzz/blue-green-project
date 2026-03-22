@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "blue-green-app"
-        APP_DIR = "/var/lib/jenkins/blue-green-project"
+        SCRIPTS_DIR = "/var/lib/jenkins/blue-green-project/scripts"
     }
 
     stages {
@@ -18,14 +18,14 @@ pipeline {
         stage('Build with Maven') {
             steps {
                 echo 'Building application with Maven...'
-                sh 'mvn clean package -DskipTests=false -f ${APP_DIR}/app/pom.xml'
+                sh 'mvn clean package -DskipTests=false -f ${WORKSPACE}/app/pom.xml'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t ${IMAGE_NAME} -f ${APP_DIR}/docker/Dockerfile ${APP_DIR}'
+                sh 'docker build -t ${IMAGE_NAME} -f ${WORKSPACE}/docker/Dockerfile ${WORKSPACE}'
             }
         }
 
@@ -35,7 +35,7 @@ pipeline {
                 sh '''
                     docker stop green-container || true
                     docker rm green-container || true
-                    docker run -d --name green-container -p 8082:8080 blue-green-app
+                    docker run -d --name green-container -p 8082:8080 ${IMAGE_NAME}
                 '''
             }
         }
@@ -53,7 +53,7 @@ pipeline {
         stage('Switch Traffic to Green') {
             steps {
                 echo 'Switching Nginx traffic to Green...'
-                sh 'bash ${APP_DIR}/scripts/switch-to-green.sh'
+                sh 'bash ${SCRIPTS_DIR}/switch-to-green.sh'
             }
         }
 
@@ -65,7 +65,7 @@ pipeline {
         }
         failure {
             echo '❌ Deployment failed! Rolling back to Blue...'
-            sh 'bash ${APP_DIR}/scripts/rollback-to-blue.sh'
+            sh 'bash ${SCRIPTS_DIR}/rollback-to-blue.sh'
         }
     }
 }
