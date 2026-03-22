@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "blue-green-app"
-        APP_DIR = "/home/ayushkzz/blue-green-project"
+        APP_DIR = "/var/lib/jenkins/blue-green-project"
     }
 
     stages {
