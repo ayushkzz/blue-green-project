@@ -25,7 +25,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'cd ${APP_DIR} && docker build -t ${IMAGE_NAME} -f docker/Dockerfile .'
+                sh 'mvn clean package -DskipTests=false -f ${APP_DIR}/app/pom.xml'
             }
         }
 
