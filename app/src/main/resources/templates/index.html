@@ -1,84 +1,67 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login - Deployment Demo</title>
+    <title>Login</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            transition: background-color 0.5s ease;
         }
-        
-        /* Dynamic Environment Themes */
-        .theme-blue { background-color: #e0f7fa; }
-        .theme-green { background-color: #e8f5e9; }
-        
-        .login-card {
+        .theme-blue { background-color: #e0f0ff; }
+        .theme-green { background-color: #e0ffe0; }
+        .card {
             background: white;
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            width: 320px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 350px;
             text-align: center;
         }
-        
-        /* Dynamic Header Colors */
         .theme-blue h2 { color: #0277bd; }
         .theme-green h2 { color: #2e7d32; }
-        
-        input[type="text"], input[type="password"] {
+        input {
             width: 100%;
             padding: 12px;
-            margin: 10px 0;
+            margin: 8px 0;
             border: 1px solid #ccc;
             border-radius: 6px;
-            box-sizing: border-box;
+            font-size: 14px;
         }
-        
         button {
             width: 100%;
             padding: 12px;
+            margin-top: 16px;
             border: none;
             border-radius: 6px;
             color: white;
-            font-weight: bold;
             font-size: 16px;
             cursor: pointer;
-            margin-top: 15px;
-            transition: opacity 0.3s;
         }
-        button:hover { opacity: 0.9; }
-        
-        /* Dynamic Button Colors */
         .theme-blue button { background-color: #0277bd; }
         .theme-green button { background-color: #2e7d32; }
-        
-        .version-info {
-            margin-top: 25px;
-            font-size: 0.85em;
-            color: #666;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
+        .env-badge {
+            margin-top: 20px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: inline-block;
         }
+        .theme-blue .env-badge { background: #e0f0ff; color: #0277bd; }
+        .theme-green .env-badge { background: #e0ffe0; color: #2e7d32; }
     </style>
 </head>
 <body th:class="'theme-' + ${env}">
-    <div class="login-card">
-        <h2>System Login</h2>
-        <form action="#" method="post">
-            <input type="text" placeholder="Username" required>
-            <input type="password" placeholder="Password" required>
-            <button type="submit">Sign In</button>
-        </form>
-        
-        <div class="version-info">
-            Active Deployment: 
-            <strong th:text="${version} + ' (' + ${env} + ')'">v1 (blue)</strong>
-        </div>
+    <div class="card">
+        <h2 th:text="${env == 'blue'} ? '🔵 Blue Environment' : '🟢 Green Environment'">Environment</h2>
+        <br/>
+        <input type="text" placeholder="Username" />
+        <input type="password" placeholder="Password" />
+        <button type="button">Login</button>
+        <div class="env-badge" th:text="'Active: ' + ${env}">Active</div>
     </div>
 </body>
 </html>

@@ -12,11 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class App {
 
-    // Spring Boot automatically maps OS variables (APP_VERSION) to lowercase, dot-separated properties
-    @Value("${app.version:v1}")
-    private String appVersion;
-
-    @Value("${deploy.env:blue}")
+    @Value("${DEPLOY_ENV:blue}")
     private String deployEnv;
 
     public static void main(String[] args) {
@@ -25,8 +21,7 @@ public class App {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("version", appVersion);
-        model.addAttribute("env", deployEnv.toLowerCase()); 
+        model.addAttribute("env", deployEnv);
         return "index";
     }
 
