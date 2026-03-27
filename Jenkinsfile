@@ -79,25 +79,23 @@ pipeline {
             }
         }
     }
-post {
-    success {
-        echo "✅ Deployment successful! ${env.TARGET_ENV} is now live."
-    }
-    failure {
-        script {
-            if (env.TARGET_ENV != null) {
-                echo "❌ Deployment failed! Rolling back..."
-                sh """
-                    docker stop ${env.TARGET_ENV}-container || true
-                    docker rm ${env.TARGET_ENV}-container || true
-                """
-            } else {
-                echo "❌ Build failed before deployment."
+
+    post {
+        success {
+            echo "✅ Deployment successful! ${env.TARGET_ENV} is now live."
+        }
+        failure {
+            script {
+                if (env.TARGET_ENV != null) {
+                    echo "❌ Deployment failed! Rolling back..."
+                    sh """
+                        docker stop ${env.TARGET_ENV}-container || true
+                        docker rm ${env.TARGET_ENV}-container || true
+                    """
+                } else {
+                    echo "❌ Build failed before deployment."
+                }
             }
         }
-    }
-}
-
-
     }
 }
