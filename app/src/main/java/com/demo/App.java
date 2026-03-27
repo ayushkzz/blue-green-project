@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class App {
 
-    // Reads environment variables injected by Docker/Jenkins
-    @Value("${APP_VERSION:v1}")
+    // Spring Boot automatically maps OS variables (APP_VERSION) to lowercase, dot-separated properties
+    @Value("${app.version:v1}")
     private String appVersion;
 
-    @Value("${DEPLOY_ENV:blue}")
+    @Value("${deploy.env:blue}")
     private String deployEnv;
 
     public static void main(String[] args) {
@@ -26,7 +26,7 @@ public class App {
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("version", appVersion);
-        model.addAttribute("env", deployEnv.toLowerCase()); // ensures it matches our CSS classes
+        model.addAttribute("env", deployEnv.toLowerCase()); 
         return "index";
     }
 
