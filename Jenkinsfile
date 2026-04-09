@@ -31,25 +31,25 @@ pipeline {
             }
         }
 
-        stage('Detect Environment') {
-            steps {
-                script {
-                    echo 'Detecting active environment...'
-                    def blueActive = sh(script: "curl -s http://localhost:${BLUE_PORT}/health | grep -q UP", returnStatus: true) == 0
+       stage('Detect Environment') {
+    steps {
+        script {
+            echo 'Detecting active environment...'
+            def nginxConfig = sh(script: "cat /etc/nginx/sites-enabled/blue-green | grep 'server localhost' | grep -o '[0-9]*'", returnStdout: true).trim()
 
-                    if (blueActive) {
-                        env.ACTIVE_ENV = "blue"
-                        env.TARGET_ENV = "green"
-                        env.TARGET_PORT = "${GREEN_PORT}"
-                    } else {
-                        env.ACTIVE_ENV = "green"
-                        env.TARGET_ENV = "blue"
-                        env.TARGET_PORT = "${BLUE_PORT}"
-                    }
-                    echo "Active: ${env.ACTIVE_ENV} → Deploying to: ${env.TARGET_ENV} on port ${env.TARGET_PORT}"
-                }
+            if (nginxConfig == "8081") {
+                env.ACTIVE_ENV = "blue"
+                env.TARGET_ENV = "green"
+                env.TARGET_PORT = "${GREEN_PORT}"
+            } else {
+                env.ACTIVE_ENV = "green"
+                env.TARGET_ENV = "blue"
+                env.TARGET_PORT = "${BLUE_PORT}"
             }
+            echo "Nginx pointing to: ${nginxConfig} | Active: ${env.ACTIVE_ENV} → Deploying to: ${env.TARGET_ENV} on port ${env.TARGET_PORT}"
         }
+    }
+}
 
         stage('Deploy') {
             steps {
